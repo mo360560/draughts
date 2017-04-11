@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=1]
+
+[ext_resource path="res://border_white.png" type="Texture" id=1]
+[ext_resource path="res://Board.tscn" type="PackedScene" id=2]
+
+[node name="Game" type="Node2D"]
+
+[node name="Border" type="Sprite" parent="."]
+
+z/relative = false
+texture = ExtResource( 1 )
+centered = false
+
+[node name="Board" parent="." instance=ExtResource( 2 )]
+
+transform/pos = Vector2( 272, 60 )
+
+
