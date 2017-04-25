@@ -4,9 +4,12 @@ var board_size = 8
 var squares = []
 var active_square
 var square_size
-var turn = "white"
+var turn = "black"
+var board_stones
 
 func _ready():
+	Global.mover.board = self
+	Global.checker.turn = turn
 	set_squares()
 	set_stones()
 
@@ -38,49 +41,31 @@ func set_stones():
 			if (i in black):
 				curr_stone.set_color("black")
 			squares[i%8][i/8].set_stone(curr_stone)
+	board_stones = set_board()
 	
-func delete_stone(pos):
-	squares[int(pos.x / square_size)][int(pos.y / square_size)].stone.queue_free()
-	squares[int(pos.x / square_size)][int(pos.y / square_size)].set_stone(null)
+func delete_stone(x, y):
+	squares[x][y].stone.queue_free()
+	squares[x][y].set_stone(null)
 	
 func next_turn():
-	for i in range(board_size):
-		if squares[i][0].stone != null and squares[i][0].stone.color == "black":
-			squares[i][0].stone.queue_free()
-			var king_black = load("res://King.tscn").instance()
-			king_black.board = self
-			add_child(king_black)
-			king_black.put_on_square(squares[i][0])
-			king_black.set_color("black")
-			squares[i%8][i/8].set_stone(king_black)
-		if squares[i][7].stone != null and squares[i][7].stone.color == "white":
-			squares[i][7].stone.queue_free()
-			var king_white = load("res://King.tscn").instance()
-			king_white.board = self
-			add_child(king_white)
-			king_white.put_on_square(squares[i][7])
-			king_white.set_color("white")
-			squares[i%8][i/8].set_stone(king_white)
-			
+	board_stones = set_board()
 	if turn == "white":
 		turn = "black"
 	else:
 		turn = "white"
-func can_anyone_jump():
+	Global.checker.turn = turn
+
+func set_board():
+	var board = []
 	for x in range(board_size):
+		board.append([])
 		for y in range(board_size):
-			var current_stone = squares[x][y].stone
-			if current_stone != null and current_stone.color == turn:
-				if x > 1 and y > 1:
-					if current_stone.is_jump_correct(squares[x - 2][y - 2]):
-						return true
-				elif x > 1 and y < board_size - 2:
-					if current_stone.is_jump_correct(squares[x - 2][y + 2]):
-						return true
-				elif x < board_size - 2 and y > 1:
-					if current_stone.is_jump_correct(squares[x + 2][y - 2]):
-						return true
-				elif x < board_size - 2 and y < board_size - 2:
-					if current_stone.is_jump_correct(squares[x + 2][y + 2]):
-						return true
-	return false
+			board[x].append([])
+			if squares[x][y].stone != null and squares[x][y].stone.type == "normal":
+				board[x][y] = squares[x][y].stone.color
+			elif squares[x][y].stone != null and squares[x][y].stone.type == "king":
+				board[x][y] = squares[x][y].stone.color.to_upper()
+			else:
+				board[x][y] = " "
+	return board
+

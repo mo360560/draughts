@@ -1,15 +1,15 @@
 extends Area2D
 
 var square_size = preload("res://blank.png").get_width()
-#var status = "free"
-var stone
+var stone = null
+var pos
 
 func set_position(x, y):
+	pos = Vector2(x, y)
 	set_pos(Vector2(x*square_size, y*square_size))
 	
 func set_stone(stone):
 	self.stone = stone
-	#self.status = stone.color
 
 func _mouse_enter():
 	get_parent().active_square = self
