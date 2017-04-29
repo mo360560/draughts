@@ -8,14 +8,16 @@ var square_size
 var turn = "black"
 var black_stones = []
 var white_stones = []
+var ai_color = "white"
+var currently_movable = []
 
 func _ready():
 	set_squares()
 	set_stones()
 	set_board_state()
-	Global.mover.set(self)
+	Global.mover.set(self, Global.checker)
 	Global.checker.set(board_size, -1)
-	Global.minimax.init(self, 5, "white")
+	Global.minimax.init(self, 5, ai_color)
 
 func set_squares():
 	var square = load("res://Square.tscn")
@@ -45,6 +47,13 @@ func set_stones():
 				curr_stone.set_type("white")
 				white_stones.append(curr_stone)
 			squares[i%8][i/8].set_stone(curr_stone)
+	set_movable()
+
+func set_movable():
+	if turn == "black":
+		currently_movable = black_stones
+	else:
+		currently_movable = white_stones
 
 func set_board_state():
 	for x in range(board_size):
@@ -71,6 +80,11 @@ func try_move(old, new):
 
 func next_turn():
 	turn = Global.opposite(turn)
-	#Global.checker.turn = turn
-	if turn == "white":
+	set_movable()
+	if turn == ai_color:
+		Global.minimax.move()
+
+func continue_turn(stone_that_jumped):
+	currently_movable = [stone_that_jumped]
+	if turn == ai_color:
 		Global.minimax.move()

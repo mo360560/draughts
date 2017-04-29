@@ -134,7 +134,7 @@ func heuristic(current_state, current_player):
 	var opponent = Global.opposite(current_player)
 	var opp_men = count_stones(current_state, opponent)
 	var opp_kings = count_stones(current_state, opponent.to_upper())
-	return 2*curr_kings + curr_men - (2*opp_kings + opp_men)
+	return 5*curr_kings + curr_men - (7*opp_kings + opp_men)
 
 func count_stones(where, which):
 	var how_many = 0
