@@ -2,23 +2,26 @@ extends Sprite
 
 var board_size = 8
 var squares = []
+var board_state = []
 var active_square
 var square_size
 var turn = "black"
-var board_stones
+var black_stones = []
+var white_stones = []
 
 func _ready():
-	Global.mover.board = self
-	Global.checker.turn = turn
 	set_squares()
 	set_stones()
+	set_board_state()
+	Global.mover.set(self)
+	Global.checker.set(turn, board_size, -1)
+	Global.minimax.init(self, 3, "white")
 
 func set_squares():
 	var square = load("res://Square.tscn")
 	square_size = square.instance().square_size
-	for x in range(board_size): #White squares aren't really necessary
+	for x in range(board_size):
 		squares.append([])
-		squares[x] = []
 		for y in range(board_size):
 			squares[x].append([])
 			squares[x][y] = square.instance()
@@ -33,39 +36,41 @@ func set_stones():
 	for i in range(board_size * board_size):
 		if (i in white or i in black):
 			curr_stone = stone.instance()
-			curr_stone.board = self
 			add_child(curr_stone)
 			curr_stone.put_on_square(squares[i%8][i/8])
-			if (i in white):
-				curr_stone.set_color("white")
 			if (i in black):
-				curr_stone.set_color("black")
+				curr_stone.set_type("black")
+				black_stones.append(curr_stone)
+			if (i in white):
+				curr_stone.set_type("white")
+				white_stones.append(curr_stone)
 			squares[i%8][i/8].set_stone(curr_stone)
-	board_stones = set_board()
-	
+
+func set_board_state():
+	for x in range(board_size):
+		board_state.append([])
+		for y in range(board_size):
+			board_state[x].append([])
+			if squares[x][y].stone == null:
+				board_state[x][y] = " "
+			else:
+				board_state[x][y] = squares[x][y].stone.type
+
 func delete_stone(x, y):
+	black_stones.erase(squares[x][y].stone)
+	white_stones.erase(squares[x][y].stone)
 	squares[x][y].stone.queue_free()
 	squares[x][y].set_stone(null)
-	
-func next_turn():
-	board_stones = set_board()
-	if turn == "white":
-		turn = "black"
+
+func try_move(old, new):
+	if Global.checker.is_legal(board_state, old, new):
+		Global.mover.move(old, new)
+		return true
 	else:
-		turn = "white"
+		return false
+
+func next_turn():
+	turn = Global.opposite(turn)
 	Global.checker.turn = turn
-
-func set_board():
-	var board = []
-	for x in range(board_size):
-		board.append([])
-		for y in range(board_size):
-			board[x].append([])
-			if squares[x][y].stone != null and squares[x][y].stone.type == "normal":
-				board[x][y] = squares[x][y].stone.color
-			elif squares[x][y].stone != null and squares[x][y].stone.type == "king":
-				board[x][y] = squares[x][y].stone.color.to_upper()
-			else:
-				board[x][y] = " "
-	return board
-
+	if turn == "white":
+		Global.minimax.move()

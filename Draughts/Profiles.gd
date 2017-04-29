@@ -4,7 +4,7 @@ var profiles = File.new()
 
 func _ready():
 	load_profiles()
-	
+
 var i = 0
 var choices = []
 
@@ -13,7 +13,7 @@ func load_profiles():
 	profiles.open("user://profiles.txt", File.READ)
 	i = 0
 	var name = profiles.get_line()
-	while name != "": #not profiles.eof_reached()
+	while name != "":
 		if not name in choices:
 			var new_choice = choice.instance()
 			new_choice.prepare(name)
@@ -23,7 +23,6 @@ func load_profiles():
 		i += 1
 	get_node("ScrollContainer").set_size(Vector2(600, 400))
 	get_node("ScrollContainer/VBoxContainer").set_size(Vector2(600, 400))
-	#get_node("List").get_button_list(choices)
 
 func _on_Button_pressed():
 	add_new_user("User" + String(i))

@@ -1,7 +1,15 @@
 extends Control
 var turn
+var board_size
+var dir_black
+
+func set(turn, board_size, dir_black):
+	self.dir_black = dir_black
+	self.turn = turn
+	self.board_size = board_size
 
 func winner(board):
+	return "none"
 	var are_there_whites = false
 	var are_there_blacks = false
 	for row in board:
@@ -15,66 +23,67 @@ func winner(board):
 	if are_there_whites:
 		return "white"
 	return "black"
-	
 
-func is_legal(board, old_x, old_y, new_x, new_y):
-	if (board[new_x][new_y] != " "):
+func is_legal(board, old, new):
+	if new.x < 0 or new.x > board_size - 1 or \
+	   new.y < 0 or new.y > board_size - 1:
 		return false
-	if self.is_jump_correct(board, old_x, old_y, new_x, new_y):
+	if board[old.x][old.y] == " ":
+		#print("aoko")
+		return false
+	if board[new.x][new.y] != " ":
+		return false
+	#if turn != board[old.x][old.y].to_lower():
+	#	return false
+	if is_move_correct(board, old, new):
 		return true
-	if board[old_x][old_y] == "white" or board[old_x][old_y] == "black":
-		if (abs(old_x - new_x) != 1 or \
-			new_y - old_y != 1) and \
-			board[old_x][old_y] == "white":
-				return false
-		if (abs(old_x - new_x) != 1 or \
-			new_y - old_y != -1) and \
-			board[old_x][old_y] == "black":
-				return false
-	elif board[old_x][old_y] == "WHITE" or board[old_x][old_y] == "BLACK":
-		if abs(old_x - new_x) != 1 or \
-			abs(old_y - new_y) != 1:
-				return false
-	if Global.checker.can_anyone_jump(board):
+	if is_jump_correct(board, old, new):
+		return true
+	else:
+		#print("error")
 		return false
-	return true
-	
-func is_jump_correct(board, old_x, old_y, new_x, new_y):
-	if board[(old_x + new_x) / 2][(old_y + new_y) / 2] == " ":
+
+func allowed_directions(stone):
+	if stone == stone.to_upper():
+		return [-1, 1]
+	elif stone == "black":
+		return [dir_black]
+	else:
+		return [-dir_black]
+
+func is_move_correct(board, old, new):
+	if abs(old.x - new.x) != 1 or abs(old.y - new.y) != 1:
 		return false
-	if board[old_x][old_y] == "white" or board[old_x][old_y] == "black":
-		return board[new_x][new_y] == " " and \
-			abs(old_x - new_x)  == 2 and \
-			board[(old_x + new_x) / 2][(old_y + new_y) / 2].to_lower() != board[old_x][old_y].to_lower() and \
-			(new_y - old_y == 2 and board[old_x][old_y] == "white" or \
-			(new_y - old_y == -2 and board[old_x][old_y] == "black"))
-	elif board[old_x][old_y] == "WHITE" or board[old_x][old_y] == "BLACK":
-		return board[new_x][new_y] == " " and \
-			abs(old_x - new_x)  == 2 and \
-			board[(old_x + new_x) / 2][(old_y + new_y) / 2].to_lower() != board[old_x][old_y].to_lower() and \
-			abs(new_y - old_y) == 2
-	return false
+	return int(new.y - old.y) in allowed_directions(board[old.x][old.y])
+
+func is_jump_correct(board, old, new):
+	var opponent = Global.opposite(board[old.x][old.y])
+	if abs(old.x - new.x) != 2 or abs(old.y - new.y) != 2:
+		return false
+	if board[(old.x+new.x)/2][(old.y+new.y)/2] != opponent:
+		return false
+	return int(new.y - old.y)/2 in allowed_directions(board[old.x][old.y])
 
 func can_anyone_jump(board):
 	for x in range(board.size()):
 		for y in range(board.size()):
-			if can_jump(board, x, y) and board[x][y].to_lower() == turn:
+			if can_jump(board, Vector2(x, y)) and board[x][y].to_lower() == turn:
 				return true
 	return false
 
-func can_jump(board, x, y):
-	var current_stone = board[x][y]
-	if current_stone != " " :
-		if x > 1 and y > 1:
-			if self.is_jump_correct(board, x, y, x - 2, y - 2):
-				return true
-		elif x > 1 and y < board.size() - 2:
-			if self.is_jump_correct(board, x, y, x - 2, y + 2):
-				return true
-		elif x < board.size() - 2 and y > 1:
-			if self.is_jump_correct(board, x, y, x + 2, y - 2):
-				return true
-		elif x < board.size() - 2 and y < board.size() - 2:
-			if self.is_jump_correct(board, x, y, x + 2, y + 2):
-				return true
+func can_jump(board, old):
+	var x = old.x
+	var y = old.y
+	if x > 1 and y > 1:
+		if self.is_jump_correct(board, old, Vector2(x - 2, y - 2)):
+			return true
+	elif x > 1 and y < board.size() - 2:
+		if self.is_jump_correct(board, old, Vector2(x - 2, y + 2)):
+			return true
+	elif x < board.size() - 2 and y > 1:
+		if self.is_jump_correct(board, old, Vector2(x + 2, y - 2)):
+			return true
+	elif x < board.size() - 2 and y < board.size() - 2:
+		if self.is_jump_correct(board, old, Vector2(x + 2, y + 2)):
+			return true
 	return false
