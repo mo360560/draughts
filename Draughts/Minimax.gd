@@ -36,7 +36,7 @@ func choose_move():
 	var new_state = CopyState(board.board_state)
 	var best_move
 	var best_value = -infinity
-	for stone in ai_stones:
+	for stone in board.currently_movable:
 		for curr_move in legal_moves(new_state, stone.current_square.pos):
 			var old = curr_move[0]
 			var new = curr_move[1]

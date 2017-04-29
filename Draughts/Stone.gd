@@ -38,8 +38,8 @@ func _input_event(viewport, event, shape_idx):
 	if (event.type == InputEvent.MOUSE_BUTTON \
         and event.button_index == BUTTON_LEFT):
 		if (event.pressed):
-			if self in get_parent().currently_movable:
-			#if get_parent(). == type.to_lower():
+			#if self in get_parent().currently_movable:
+			if get_parent().turn == type.to_lower():
 				is_held = true
 				set_process(true)
 		else:

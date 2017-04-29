@@ -3,25 +3,26 @@ extends Sprite
 var board_size = 8
 var squares = []
 var board_state = []
-var active_square
-var square_size
-var turn = "black"
 var black_stones = []
 var white_stones = []
-var ai_color = "white"
 var currently_movable = []
+var active_square
+var turn = "black"
+var ai_color = "white"
+
 
 func _ready():
 	set_squares()
 	set_stones()
 	set_board_state()
+	set_movable()
 	Global.mover.set(self, Global.checker)
 	Global.checker.set(board_size, -1)
 	Global.minimax.init(self, 5, ai_color)
+	first_turn()
 
 func set_squares():
 	var square = load("res://Square.tscn")
-	square_size = square.instance().square_size
 	for x in range(board_size):
 		squares.append([])
 		for y in range(board_size):
@@ -35,6 +36,8 @@ func set_stones():
 	var curr_stone
 	var white = [1, 3, 5, 7, 8, 10, 12, 14, 17, 19, 21, 23]
 	var black = [40, 42, 44, 46, 49, 51, 53, 55, 56, 58, 60, 62]
+	#var white = [14, 44, 46]
+	#var black = [21, 49, 51, 53]
 	for i in range(board_size * board_size):
 		if (i in white or i in black):
 			curr_stone = stone.instance()
@@ -47,7 +50,6 @@ func set_stones():
 				curr_stone.set_type("white")
 				white_stones.append(curr_stone)
 			squares[i%8][i/8].set_stone(curr_stone)
-	set_movable()
 
 func set_movable():
 	if turn == "black":
@@ -78,9 +80,17 @@ func try_move(old, new):
 	else:
 		return false
 
+func first_turn():
+	if turn == ai_color:
+		Global.minimax.move()
+
 func next_turn():
 	turn = Global.opposite(turn)
 	set_movable()
+	Global.winner = Global.checker.winner(board_state)
+	if Global.winner != "none":
+		get_tree().change_scene("res://WinScreen.tscn")
+		return
 	if turn == ai_color:
 		Global.minimax.move()
 

@@ -9,14 +9,13 @@ func set(board_size, dir_black):
 	self.board_size = board_size
 
 func winner(board):
-	return "none"
 	var are_there_whites = false
 	var are_there_blacks = false
-	for row in board:
-		for el in row:
-			if el.to_lower() == "white":
+	for x in range(board_size):
+		for y in range(board_size):
+			if board[x][y].to_lower() == "white":
 				are_there_whites = true
-			if el.to_lower() == "black":
+			if board[x][y].to_lower() == "black":
 				are_there_blacks = true
 			if are_there_whites and are_there_blacks:
 				return "none"
