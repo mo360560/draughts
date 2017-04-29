@@ -1,6 +1,11 @@
 extends Control
 
 var infinity = 1000
+var moves = [
+[1,1], [1,-1], [-1,1], [-1,-1],
+[2,2], [2,-2], [-2,2], [-2,-2],
+]
+
 var board
 var initial_depth
 var mover
@@ -12,7 +17,7 @@ var opponent_stones
 func init(board, depth, ai_color):
 	self.board = board
 	initial_depth = depth
-	self.ai_color = ai_color	
+	self.ai_color = ai_color
 	if ai_color == "black":
 		ai_stones = board.black_stones
 		opponent_stones = board.white_stones
@@ -39,7 +44,7 @@ func choose_move():
 			new_state[(old.x+new.x)/2][(old.y+new.y)/2] == " "
 			new_state[new.x][new.y] = new_state[old.x][old.y]
 			new_state[old.x][old.y] = " "
-			var curr_value = minimax(new_state, initial_depth, opponent)
+			var curr_value = minimax(new_state, initial_depth, -infinity, infinity, opponent)
 			#rollback:
 			new_state[(old.x+new.x)/2][(old.y+new.y)/2] = dummy
 			new_state[old.x][old.y] = new_state[new.x][new.y] 
@@ -58,28 +63,15 @@ func CopyState(state):
 			new_state[i][j] = state[i][j]
 	return new_state
 
-func show_state(state):
-	print(".")
-	print("plansza:")
-	for i in range(8):
-		var linia = []
-		for j in range(8):
-			if state[j][i] != " ":
-				linia.append(state[j][i].to_lower()[0])
-			else:
-				linia.append("_.")
-		print(linia)
-
 func legal_moves(state, old):
 	var list = []
-	for i in range(-2, 3):
-		for j in range(-2, 3):
-			var new = Vector2(old.x+i, old.y+j)
-			if checker.is_legal(state, old, new):
-				list.append([old, new])
+	for m in moves:
+		var new = Vector2(old.x+m[0], old.y+m[1])
+		if checker.is_legal(state, old, new):
+			list.append([old, new])
 	return list
 
-func minimax(current_state, depth, current_player):
+func minimax(current_state, depth, alpha, beta, current_player):
 	if depth == 0:
 		return heuristic(current_state, current_player)
 	elif checker.winner(current_state) != "none":
@@ -99,12 +91,15 @@ func minimax(current_state, depth, current_player):
 				new_state[(old.x+new.x)/2][(old.y+new.y)/2] = " "
 				new_state[new.x][new.y] = new_state[old.x][old.y]
 				new_state[old.x][old.y] = " "
-				var curr_value = minimax(new_state, depth-1, opponent)
+				var curr_value = minimax(new_state, depth-1, alpha, beta, opponent)
 				#rollback:
 				new_state[(old.x+new.x)/2][(old.y+new.y)/2] = dummy
 				new_state[old.x][old.y] = new_state[new.x][new.y] 
 				new_state[new.x][new.y] = " "
 				best_value = max(best_value, curr_value)
+				alpha = max(best_value, alpha)
+				if beta <= alpha:
+					return best_value
 	else: #minimizingPlayer
 		best_value = infinity
 		for stone in opponent_stones:
@@ -116,12 +111,15 @@ func minimax(current_state, depth, current_player):
 				new_state[(old.x+new.x)/2][(old.y+new.y)/2] = " "
 				new_state[new.x][new.y] = new_state[old.x][old.y]
 				new_state[old.x][old.y] = " "
-				var curr_value = minimax(new_state, depth-1, ai_color)
+				var curr_value = minimax(new_state, depth-1, alpha, beta, ai_color)
 				#rollback:
 				new_state[(old.x+new.x)/2][(old.y+new.y)/2] = dummy
 				new_state[old.x][old.y] = new_state[new.x][new.y] 
 				new_state[new.x][new.y] = " "
 				best_value = min(best_value, curr_value)
+				beta = min(beta, best_value)
+				if beta <= alpha:
+					return best_value
 	return best_value
 
 func final_value(current_state, current_player):
@@ -131,14 +129,17 @@ func final_value(current_state, current_player):
 		return -infinity
 
 func heuristic(current_state, current_player):
-	var curr = count_stones(current_state, current_player)
-	var opp = count_stones(current_state, Global.opposite(current_player))
-	return curr - opp
+	var curr_men = count_stones(current_state, current_player)
+	var curr_kings = count_stones(current_state, current_player.to_upper())
+	var opponent = Global.opposite(current_player)
+	var opp_men = count_stones(current_state, opponent)
+	var opp_kings = count_stones(current_state, opponent.to_upper())
+	return 2*curr_kings + curr_men - (2*opp_kings + opp_men)
 
 func count_stones(where, which):
 	var how_many = 0
 	for x in range(board.board_size):
 		for y in range(board.board_size):
-			if where[x][y].to_lower() == which:
+			if where[x][y] == which:
 				how_many += 1
 	return how_many

@@ -14,8 +14,8 @@ func _ready():
 	set_stones()
 	set_board_state()
 	Global.mover.set(self)
-	Global.checker.set(turn, board_size, -1)
-	Global.minimax.init(self, 3, "white")
+	Global.checker.set(board_size, -1)
+	Global.minimax.init(self, 5, "white")
 
 func set_squares():
 	var square = load("res://Square.tscn")
@@ -71,6 +71,6 @@ func try_move(old, new):
 
 func next_turn():
 	turn = Global.opposite(turn)
-	Global.checker.turn = turn
+	#Global.checker.turn = turn
 	if turn == "white":
 		Global.minimax.move()
