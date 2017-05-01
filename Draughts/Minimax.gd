@@ -21,7 +21,7 @@ func init(board, depth, ai_color):
 
 func move():
 	var m = choose_move()
-	mover.move(m[0], m[1])
+	board.try_move(m[0], m[1])
 
 func choose_move():
 	var opponent = Global.opposite(ai_color)
@@ -81,9 +81,9 @@ func player_stones_positions(state, color):
 
 func minimax(current_state, depth, alpha, beta, current_player):
 	if depth == 0:
-		return heuristic(current_state, current_player)
+		return heuristic(current_state)
 	elif checker.winner(current_state) != "none":
-		return final_value(current_state, current_player)
+		return final_value(current_state)
 	var new_state = CopyState(current_state)
 	var best_value
 	var opponent = Global.opposite(ai_color)
@@ -131,19 +131,19 @@ func minimax(current_state, depth, alpha, beta, current_player):
 					return best_value
 	return best_value
 
-func final_value(current_state, current_player):
-	if current_player == checker.winner(current_state):
+func final_value(current_state):
+	if ai_color == checker.winner(current_state):
 		return infinity
 	else:
 		return -infinity
 
-func heuristic(current_state, current_player):	
-	var curr_men = count_stones(current_state, current_player)
-	var curr_kings = count_stones(current_state, current_player.to_upper())
-	var opponent = Global.opposite(current_player)
+func heuristic(current_state):
+	var ai_men = count_stones(current_state, ai_color)
+	var ai_kings = count_stones(current_state, ai_color.to_upper())
+	var opponent = Global.opposite(ai_color)
 	var opp_men = count_stones(current_state, opponent)
 	var opp_kings = count_stones(current_state, opponent.to_upper())
-	var h = 5*curr_kings + curr_men - (5*opp_kings + opp_men)
+	var h = 5*ai_kings + ai_men - (5*opp_kings + opp_men)
 	return h
 
 func count_stones(where, which):

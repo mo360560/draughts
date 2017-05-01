@@ -18,7 +18,7 @@ func _ready():
 	Global.mover.set(self, Global.checker)
 	Global.checker.set(board_size, -1)
 	Global.minimax.init(self, 5, ai_color)
-	first_turn()
+	ask_for_next_move()
 
 func set_squares():
 	var square = load("res://Square.tscn")
@@ -35,12 +35,6 @@ func set_stones():
 	var curr_stone
 	var white = [1, 3, 5, 7, 8, 10, 12, 14, 17, 19, 21, 23]
 	var black = [40, 42, 44, 46, 49, 51, 53, 55, 56, 58, 60, 62]
-	white = [14, 44, 46]
-	black = [21, 49, 51, 53]
-	#white = [3, 7]
-	#black = [10, 28]
-	#white = [14, 51, 53]
-	#black = [21]
 	for i in range(board_size * board_size):
 		if (i in white or i in black):
 			curr_stone = stone.instance()
@@ -78,26 +72,31 @@ func delete_stone(x, y):
 
 func try_move(old, new):
 	if Global.checker.is_legal(board_state, old, new):
-		Global.mover.move(old, new)
+		var what_next = Global.mover.move(old, new)
+		if what_next == "continue":
+			continue_turn(new)
+		else:
+			next_turn()
+		if check_winner() == "none":
+			ask_for_next_move()
 		return true
 	else:
 		return false
 
-func first_turn():
+func ask_for_next_move():
 	if turn == ai_color:
 		Global.minimax.move()
 
 func next_turn():
 	turn = Global.opposite(turn)
 	set_movable()
+
+func continue_turn(pos):
+	var stone_that_jumped = squares[pos.x][pos.y].stone
+	currently_movable = [stone_that_jumped]
+
+func check_winner():
 	Global.winner = Global.checker.winner(board_state)
 	if Global.winner != "none":
 		get_tree().change_scene("res://WinScreen.tscn")
-		return
-	if turn == ai_color:
-		Global.minimax.move()
-
-func continue_turn(stone_that_jumped):
-	currently_movable = [stone_that_jumped]
-	if turn == ai_color:
-		Global.minimax.move()
+	return Global.winner
