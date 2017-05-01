@@ -11,25 +11,15 @@ var initial_depth
 var mover
 var checker
 var ai_color
-var ai_stones
-var opponent_stones
 
 func init(board, depth, ai_color):
 	self.board = board
 	initial_depth = depth
 	self.ai_color = ai_color
-	if ai_color == "black":
-		ai_stones = board.black_stones
-		opponent_stones = board.white_stones
-	else:
-		ai_stones = board.white_stones
-		opponent_stones = board.black_stones
 	mover = Global.mover
 	checker = Global.checker
 
 func move():
-	print("NEW MOVE")
-	best_heuristic = -1001
 	var m = choose_move()
 	mover.move(m[0], m[1])
 
@@ -147,8 +137,6 @@ func final_value(current_state, current_player):
 	else:
 		return -infinity
 
-var best_heuristic = -1001
-
 func heuristic(current_state, current_player):	
 	var curr_men = count_stones(current_state, current_player)
 	var curr_kings = count_stones(current_state, current_player.to_upper())
@@ -156,19 +144,7 @@ func heuristic(current_state, current_player):
 	var opp_men = count_stones(current_state, opponent)
 	var opp_kings = count_stones(current_state, opponent.to_upper())
 	var h = 5*curr_kings + curr_men - (5*opp_kings + opp_men)
-	if h > best_heuristic:
-		best_heuristic = h
-		show_state(current_state)
-		print("heuristic:", h)
-	return 5*curr_kings + curr_men - (5*opp_kings + opp_men)
-
-func show_state(current_state):
-	print("state:")
-	for x in range(8):
-		var line = []
-		for y in range(8):
-			line.append(current_state[y][x][0])
-		print(line)
+	return h
 
 func count_stones(where, which):
 	var how_many = 0
