@@ -9,6 +9,7 @@ func set(board_size, dir_black):
 	self.board_size = board_size
 
 func winner(board):
+	#Global.show_state(board)
 	var are_there_whites = false
 	var are_there_blacks = false
 	for x in range(board_size):

@@ -36,8 +36,12 @@ func set_stones():
 	var curr_stone
 	var white = [1, 3, 5, 7, 8, 10, 12, 14, 17, 19, 21, 23]
 	var black = [40, 42, 44, 46, 49, 51, 53, 55, 56, 58, 60, 62]
-	#var white = [14, 44, 46]
-	#var black = [21, 49, 51, 53]
+	#white = [14, 44, 46]
+	#black = [21, 49, 51, 53]
+	#white = [3, 7]
+	#black = [10, 28]
+	#white = [14, 51, 53]
+	#black = [21]
 	for i in range(board_size * board_size):
 		if (i in white or i in black):
 			curr_stone = stone.instance()
