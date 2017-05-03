@@ -1,6 +1,7 @@
 extends Node2D
 
 #func _ready():
+	#get_tree().change_scene("res://Start.tscn")
 	#if (Global.curr_user == null):
 	#	get_tree().change_scene("res://Profiles.tscn")
 	#else:

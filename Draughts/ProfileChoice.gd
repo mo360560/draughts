@@ -11,4 +11,4 @@ func prepare(n):
 
 func _on_ProfileChoice_pressed():
 	Global.curr_user = name
-	get_tree().change_scene("res://Game.tscn")
+	get_tree().change_scene("res://MainMenu.tscn")
