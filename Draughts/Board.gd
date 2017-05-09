@@ -17,7 +17,7 @@ func _ready():
 	set_movable()
 	Global.mover.set(self, Global.checker)
 	Global.checker.set(board_size, -1)
-	Global.minimax.init(self, 5, ai_color)
+	Global.minimax.init(self, 6, ai_color)
 	ask_for_next_move()
 
 func set_squares():
@@ -96,7 +96,7 @@ func continue_turn(pos):
 	currently_movable = [stone_that_jumped]
 
 func check_winner():
-	Global.winner = Global.checker.winner(board_state)
+	Global.winner = Global.checker.winner(board_state, turn)
 	if Global.winner != "none":
 		get_tree().change_scene("res://WinScreen.tscn")
 	return Global.winner

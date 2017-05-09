@@ -8,21 +8,22 @@ func set(board_size, dir_black):
 	self.dir_black = dir_black
 	self.board_size = board_size
 
-func winner(board):
-	#Global.show_state(board)
-	var are_there_whites = false
-	var are_there_blacks = false
+func winner(state, curr_player):
+	var white_has_move = false
+	var black_has_move = false
 	for x in range(board_size):
 		for y in range(board_size):
-			if board[x][y].to_lower() == "white":
-				are_there_whites = true
-			if board[x][y].to_lower() == "black":
-				are_there_blacks = true
-			if are_there_whites and are_there_blacks:
+			if state[x][y].to_lower() == "black":
+				if can_move(state, Vector2(x, y)):
+					black_has_move = true
+			if state[x][y].to_lower() == "white":
+				if can_move(state, Vector2(x, y)):
+					white_has_move = true
+			if black_has_move && white_has_move:
 				return "none"
-	if are_there_whites:
-		return "white"
-	return "black"
+	if black_has_move:
+		return "black"
+	return "white"
 
 func is_legal(board, old, new):
 	if initial_check(board, old, new) == false:
@@ -80,5 +81,18 @@ func can_jump(board, old):
 		var new = Vector2(old.x + v[0]*2, old.y + v[1]*2)
 		if initial_check(board, old, new):
 			if is_jump_correct(board, old, new):
+				return true
+	return false
+
+func can_continue(state, old, new):
+	return was_jump(old, new) and can_jump(state, new)
+
+func was_jump(old, new):
+	return abs(old.x-new.x) == 2
+
+func can_move(state, pos):
+	for dir in directions:
+		for i in range(1, 3):
+			if is_legal(state, pos, Vector2(pos.x+dir[0]*i, pos.y+dir[1]*i)):
 				return true
 	return false
