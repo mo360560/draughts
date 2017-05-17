@@ -38,19 +38,21 @@ func _input_event(viewport, event, shape_idx):
 	if (event.type == InputEvent.MOUSE_BUTTON \
         and event.button_index == BUTTON_LEFT):
 		if (event.pressed):
-			#if self in get_parent().currently_movable:
-			if get_parent().turn == type.to_lower():
-				is_held = true
-				set_process(true)
+			if self in get_parent().currently_movable:
+				if get_parent().turn == type.to_lower():
+					is_held = true
+					set_process(true)
 		else:
 			is_held = false
 
 func dragging():
 	var target_square = get_parent().active_square
 	if (is_held):
+		#moving stone over the board
 		set_global_pos(get_global_mouse_pos())
 		get_node("Sprite").set_z(1)
 	else:
+		#putting stone down
 		var success = false
 		if target_square != null:
 			var old = current_square.pos

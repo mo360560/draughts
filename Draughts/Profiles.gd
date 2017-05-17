@@ -1,38 +1,39 @@
 extends Node2D
 
 var profiles = File.new()
+var choice = load("res://ProfileChoice.tscn")
+
+var choices = []
+var buttons = []
 
 func _ready():
-	load_profiles()
-
-var i = 0
-var choices = []
-
-func load_profiles():
-	var choice = load("res://ProfileChoice.tscn")
 	profiles.open("user://profiles.txt", File.READ)
-	i = 0
 	var name = profiles.get_line()
 	while name != "":
 		if not name in choices:
 			var new_choice = choice.instance()
 			new_choice.prepare(name)
-			get_node("ScrollContainer/VBoxContainer").add_child(new_choice)
 			choices.append(name)
+			get_node("ScrollContainer/VBoxContainer").add_child(new_choice)
 		name = profiles.get_line()
-		i += 1
-	get_node("ScrollContainer").set_size(Vector2(600, 400))
-	get_node("ScrollContainer/VBoxContainer").set_size(Vector2(600, 400))
+	profiles.close()
 
+var textbox_open = false
 func _on_Button_pressed():
-	add_new_user("User" + String(i))
+	if not textbox_open:
+		get_node("AddNew").add_child(load("res://NewName.tscn").instance())
+	else:
+		var textbox = get_node("AddNew").get_child(0)
+		add_new_user(textbox.get_line(0))
+		textbox.queue_free()
+	textbox_open = not textbox_open
 
 func add_new_user(name):
 	if not name in choices:
 		add_to_list(name)
 		create_directory(name)
 		create_default_avatar(name)
-		load_profiles()
+		_ready()
 
 func add_to_list(name):
 		open_to_write()

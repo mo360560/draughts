@@ -7,6 +7,7 @@
 
 texture = ExtResource( 1 )
 centered = false
+offset = Vector2( -1, -1 )
 script/script = ExtResource( 2 )
 
 

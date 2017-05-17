@@ -4,6 +4,7 @@
 
 [node name="ProfileChoice" type="Button"]
 
+rect/min_size = Vector2( 400, 100 )
 focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2

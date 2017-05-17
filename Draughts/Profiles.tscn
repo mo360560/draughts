@@ -28,23 +28,24 @@ focus/ignore_mouse = false
 focus/stop_mouse = true
 size_flags/horizontal = 2
 size_flags/vertical = 2
-margin/left = 200.0
+margin/left = 312.0
 margin/top = 50.0
-margin/right = 800.0
-margin/bottom = 450.0
+margin/right = 732.0
+margin/bottom = 470.0
 scroll/horizontal = true
 scroll/vertical = true
 
 [node name="VBoxContainer" type="VBoxContainer" parent="ScrollContainer"]
 
+rect/min_size = Vector2( 400, 400 )
 focus/ignore_mouse = false
 focus/stop_mouse = false
 size_flags/horizontal = 2
 size_flags/vertical = 2
 margin/left = 0.0
 margin/top = 0.0
-margin/right = 0.0
-margin/bottom = 0.0
+margin/right = 400.0
+margin/bottom = 400.0
 alignment = 0
 
 [connection signal="pressed" from="AddNew" to="." method="_on_Button_pressed"]

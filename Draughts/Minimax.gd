@@ -1,10 +1,6 @@
 extends Control
 
 var infinity = 1000
-var moves = [
-[1,1], [1,-1], [-1,1], [-1,-1],
-[2,2], [2,-2], [-2,2], [-2,-2],
-]
 
 var board
 var initial_depth
@@ -61,7 +57,7 @@ func count_stones(where, which):
 
 func legal_moves(state, old):
 	var list = []
-	for m in moves:
+	for m in checker.moves:
 		var new = Vector2(old.x+m[0], old.y+m[1])
 		if checker.is_legal(state, old, new): #O(board_size^2)
 			list.append([old, new])

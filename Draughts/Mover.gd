@@ -14,7 +14,7 @@ func move(old, new):
 		board.delete_stone((old.x + new.x) / 2, (old.y + new.y) / 2)
 	board.set_board_state()
 	var what_next = "next"
-	if checker.can_continue(board.board_state, old, new):
+	if board.checker.can_continue(board.board_state, old, new):
 		what_next = "continue"
 	if new.y == 0 or new.y == board.board_size - 1:
 		stone.promote()

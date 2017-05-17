@@ -1,8 +1,12 @@
 extends Control
 
-var directions = [[1,1], [1,-1], [-1,1], [-1,-1]]
 var board_size
 var dir_black
+var directions = [[1,1], [1,-1], [-1,1], [-1,-1]]
+var moves = [
+[1,1], [1,-1], [-1,1], [-1,-1],
+[2,2], [2,-2], [-2,2], [-2,-2],
+]
 
 func set(board_size, dir_black):
 	self.dir_black = dir_black
@@ -21,9 +25,11 @@ func winner(state, curr_player):
 					white_has_move = true
 			if black_has_move && white_has_move:
 				return "none"
-	if black_has_move:
+	if curr_player == "black" and not black_has_move:
+		return "white"
+	if curr_player == "white" and not white_has_move:
 		return "black"
-	return "white"
+	return "none"
 
 func is_legal(board, old, new):
 	if initial_check(board, old, new) == false:
