@@ -58,7 +58,7 @@ func count_stones(where, which):
 func legal_moves(state, old):
 	var list = []
 	for m in checker.moves:
-		var new = Vector2(old.x+m[0], old.y+m[1])
+		var new = Vector2(old.x, old.y) + m
 		if checker.is_legal(state, old, new): #O(board_size^2)
 			list.append([old, new])
 	return list
@@ -124,7 +124,7 @@ func minimax_node_check(state, depth, alpha, beta, curr_player, curr_move):
 	state[(old.x+new.x)/2][(old.y+new.y)/2] = " "
 	state[new.x][new.y] = new_stone
 	state[old.x][old.y] = " "
-	if checker.was_jump(old, new):
+	if checker.is_jump(old, new):
 		remove_stone(middle)
 	if checker.can_continue(state, old, new):
 		continue_move = true
@@ -133,7 +133,7 @@ func minimax_node_check(state, depth, alpha, beta, curr_player, curr_move):
 	else:
 		curr_value = minimax(state, depth-1, alpha, beta, opponent)
 	#rollback:
-	if checker.was_jump(old, new):
+	if checker.is_jump(old, new):
 		restore_stone(middle)
 	state[(old.x+new.x)/2][(old.y+new.y)/2] = middle
 	state[old.x][old.y] = old_stone
