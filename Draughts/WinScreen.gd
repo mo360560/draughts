@@ -1,7 +1,10 @@
 extends Control
 
 func _ready():
-	get_node("TextEdit").set_text(Global.winner + " won!")
+	if Global.winner == draw:
+		get_node("TextEdit").set_text("Draw!")
+	else:
+		get_node("TextEdit").set_text(Global.winner + " won!")
 
 func _on_Again_pressed():
 	get_tree().change_scene("res://Game.tscn")

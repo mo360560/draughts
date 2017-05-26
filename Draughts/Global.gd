@@ -6,6 +6,16 @@ var checker = load("res://Checker.tscn").instance()
 var mover = load("res://Mover.tscn").instance()
 var minimax = load("res://Minimax.tscn").instance()
 
+#AIvsAi testing:
+var minimax2 = load("res://Minimax2.tscn").instance()
+var m1_wins = 0
+var m2_wins = 0
+var draws = 0
+var curr_game = 1
+var games_total = 10
+var ai_color = "white"
+
+
 func opposite(color):
 	if color == null:
 		return "white"

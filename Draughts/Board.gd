@@ -11,6 +11,13 @@ var turn = "black"
 var ai_color = "white" #or "black" or "none"
 var checker = Global.checker
 var mover = Global.mover
+var minimax = Global.minimax
+
+#AIvsAI testing:
+var AIvsAI = true
+var moves = 0
+var minimax2 = Global.minimax2
+var max_moves = 180
 
 func _ready():
 	set_squares()
@@ -19,7 +26,10 @@ func _ready():
 	set_movable()
 	mover.set(self, checker)
 	checker.set(board_size, -1)
-	Global.minimax.init(self, 4, ai_color)
+	minimax.init(self, 4, ai_color)
+	if (AIvsAI):
+		minimax.init(self, 4, Global.ai_color)
+		minimax2.init(self, 1, Global.opposite(Global.ai_color))
 	ask_for_next_move()
 
 func set_squares():
@@ -89,9 +99,13 @@ func try_move(old, new):
 
 func ask_for_next_move():
 	if turn == ai_color:
-		Global.minimax.move()
+		minimax.move()
+	elif AIvsAI:
+		minimax2.move()
 
 func next_turn():
+	if AIvsAI:
+		moves += 1
 	turn = Global.opposite(turn)
 	set_movable()
 
@@ -101,6 +115,25 @@ func continue_turn(pos):
 
 func check_winner():
 	Global.winner = checker.winner(board_state, turn)
+	if moves > max_moves:
+		Global.winner = "draw"
 	if Global.winner != "none":
-		get_tree().change_scene("res://WinScreen.tscn")
+		if AIvsAI:
+			if Global.winner == ai_color:
+				Global.m1_wins += 1
+			elif Global.winner == Global.opposite(ai_color):
+				Global.m2_wins += 1
+			else:
+				Global.draws += 1
+			print("After ", Global.curr_game, " games:")
+			print("Minimax1: ", Global.m1_wins)
+			print("Minimax2: ", Global.m2_wins)
+			print("Draws: ", Global.draws)
+			if Global.curr_game < Global.games_total:
+				Global.curr_game += 1
+				Global.ai_color = Global.opposite(Global.ai_color)
+				get_tree().change_scene("res://Game.tscn")
+		else:
+			get_tree().change_scene("res://WinScreen.tscn")
 	return Global.winner
+
