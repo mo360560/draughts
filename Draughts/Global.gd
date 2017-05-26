@@ -12,9 +12,8 @@ var m1_wins = 0
 var m2_wins = 0
 var draws = 0
 var curr_game = 1
-var games_total = 10
+var games_total = 50
 var ai_color = "white"
-
 
 func opposite(color):
 	if color == null:

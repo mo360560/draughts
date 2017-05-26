@@ -29,7 +29,7 @@ func _ready():
 	minimax.init(self, 4, ai_color)
 	if (AIvsAI):
 		minimax.init(self, 4, Global.ai_color)
-		minimax2.init(self, 1, Global.opposite(Global.ai_color))
+		minimax2.init(self, 4, Global.opposite(Global.ai_color))
 	ask_for_next_move()
 
 func set_squares():
@@ -119,9 +119,9 @@ func check_winner():
 		Global.winner = "draw"
 	if Global.winner != "none":
 		if AIvsAI:
-			if Global.winner == ai_color:
+			if Global.winner == Global.ai_color:
 				Global.m1_wins += 1
-			elif Global.winner == Global.opposite(ai_color):
+			elif Global.winner == Global.opposite(Global.ai_color):
 				Global.m2_wins += 1
 			else:
 				Global.draws += 1

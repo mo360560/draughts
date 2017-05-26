@@ -4,5 +4,6 @@ extends Node2D
 #	if (Global.curr_user == null):
 #		get_tree().change_scene("res://Profiles.tscn")
 #	else:
-#		get_node("RichTextLabel").add_text("Playing as " + Global.curr_user)
+#		var text = "Playing as " + Global.curr_user
+#		get_node("RichTextLabel").add_text(text)
 
