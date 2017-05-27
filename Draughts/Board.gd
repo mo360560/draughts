@@ -14,7 +14,7 @@ var mover = Global.mover
 var minimax = Global.minimax
 
 #AIvsAI testing:
-var AIvsAI = true
+var AIvsAI = false
 var moves = 0
 var minimax2 = Global.minimax2
 var max_moves = 180
@@ -28,7 +28,7 @@ func _ready():
 	checker.set(board_size, -1)
 	minimax.init(self, 4, ai_color)
 	if (AIvsAI):
-		minimax.init(self, 4, Global.ai_color)
+		minimax.init(self, 20, Global.ai_color)
 		minimax2.init(self, 4, Global.opposite(Global.ai_color))
 	ask_for_next_move()
 

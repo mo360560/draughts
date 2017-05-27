@@ -1,7 +1,7 @@
 extends Control
 
 func _ready():
-	if Global.winner == draw:
+	if Global.winner == "draw":
 		get_node("TextEdit").set_text("Draw!")
 	else:
 		get_node("TextEdit").set_text(Global.winner + " won!")

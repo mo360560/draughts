@@ -14,6 +14,38 @@ var ai_kings
 var opp_men
 var opp_kings
 
+var zobrist_array = []
+var transposition_table = {}
+
+#Each kind of stone has it's value used to evaluate hash of board
+func value_of(stone):
+	if stone == "black":
+		return 0
+	if stone == "BLACK":
+		return 1
+	if stone == "white":
+		return 2
+	if stone == "WHITE":
+		return 3
+
+#Random value for every type of stone on every possible square
+func init_zobrist_array():
+	for i in range(8):
+		zobrist_array.append([])
+		for j in range(8):
+			zobrist_array[i].append([])
+			for k in range(4):
+				zobrist_array[i][j].append(randi())
+
+func compute_board_hash(state):
+	var h = 0
+	for i in range(8):
+		for j in range(8):
+			if state[i][j] != " ":
+				h ^= zobrist_array[i][j][value_of(state[i][j])]
+	return h
+
+
 func init(board, depth, ai_color):
 	self.board = board
 	initial_depth = depth
@@ -21,6 +53,7 @@ func init(board, depth, ai_color):
 	opp_color = Global.opposite(ai_color)
 	mover = Global.mover
 	checker = Global.checker
+	init_zobrist_array()
 
 func move():
 	var m = choose_move()
@@ -33,9 +66,10 @@ func choose_move():
 	set_stones_count(state)
 	var best_move = []
 	var best_value = -infinity
+	var curr_value
 	for stone in board.currently_movable:
 		for curr_move in legal_moves(state, stone.current_square.pos):
-			var curr_value = minimax_node_check(state, initial_depth, -infinity, infinity, ai_color, curr_move)
+			curr_value = minimax_node_check(state, initial_depth, -infinity, infinity, ai_color, curr_move)
 			if curr_value > best_value:
 				best_value = curr_value
 				best_move = [curr_move]
@@ -87,9 +121,14 @@ func minimax(state, depth, alpha, beta, curr_player):
 	if depth == 0:
 		return heuristic(state)
 	var best_value = best_value(curr_player)
+	var curr_value
 	for pos in player_stones_positions(state, curr_player):
 		for curr_move in legal_moves(state, pos):
-			var curr_value = minimax_node_check(state, depth, alpha, beta, curr_player, curr_move)
+			if not transposition_table.has(compute_board_hash(state)):
+				curr_value = minimax_node_check(state, depth, alpha, beta, curr_player, curr_move)
+				transposition_table[compute_board_hash(state)] = curr_value
+			else:
+				curr_value = transposition_table[compute_board_hash(state)]
 			if curr_player == ai_color:
 				best_value = max(best_value, curr_value)
 				alpha = max(best_value, alpha)
