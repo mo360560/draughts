@@ -22,7 +22,9 @@ var textbox_open = false
 func _on_Button_pressed():
 	if not textbox_open:
 		get_node("AddNew").add_child(load("res://NewName.tscn").instance())
+		get_node("AddNew").set_text("Accept name")
 	else:
+		get_node("AddNew").set_text("Add profile")
 		var textbox = get_node("AddNew").get_child(0)
 		add_new_user(textbox.get_line(0))
 		textbox.queue_free()
