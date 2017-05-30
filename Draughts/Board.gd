@@ -12,12 +12,13 @@ var ai_color = "white" #or "black" or "none"
 var checker = Global.checker
 var mover = Global.mover
 var minimax = Global.minimax3
+var moves = 0
+var max_moves = 180
 
 #AIvsAI testing:
 var AIvsAI = true
-var moves = 0
 var minimax2 = Global.minimax2
-var max_moves = 180
+
 
 func _ready():
 	set_squares()
@@ -102,10 +103,8 @@ func ask_for_next_move():
 	if AIvsAI:
 		if turn == Global.m1_color:
 			minimax.move()
-		elif turn == Global.m2_color:
-			minimax2.move()
 		else:
-			print("error")
+			minimax2.move()
 	else:
 		if turn == ai_color:
 			minimax.move()
@@ -135,12 +134,12 @@ func check_winner():
 			print("Minimax1: ", Global.m1_wins)
 			print("Minimax2: ", Global.m2_wins)
 			print("Draws: ", Global.draws)
-			
+			Global.curr_game += 1
+			#changing who will move first in the next game:
 			Global.m1_color = Global.opposite(Global.m1_color)
 			Global.m2_color = Global.opposite(Global.m2_color)
-			Global.curr_game += 1
 			get_parent().queue_free()
-			if (Global.curr_game < Global.games_total):
+			if (Global.curr_game <= Global.games_total):
 				get_tree().change_scene("res://Game.tscn")
 		else:
 			get_tree().change_scene("res://WinScreen.tscn")
