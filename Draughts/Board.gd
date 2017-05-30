@@ -11,10 +11,10 @@ var turn = "black"
 var ai_color = "white" #or "black" or "none"
 var checker = Global.checker
 var mover = Global.mover
-var minimax = Global.minimax
+var minimax = Global.minimax3
 
 #AIvsAI testing:
-var AIvsAI = false
+var AIvsAI = true
 var moves = 0
 var minimax2 = Global.minimax2
 var max_moves = 180
@@ -26,10 +26,11 @@ func _ready():
 	set_movable()
 	mover.set(self, checker)
 	checker.set(board_size, -1)
-	minimax.init(self, 4, ai_color)
 	if (AIvsAI):
-		minimax.init(self, 20, Global.ai_color)
-		minimax2.init(self, 4, Global.opposite(Global.ai_color))
+		minimax.init(self, 2, Global.m1_color)
+		minimax2.init(self, 2, Global.m2_color)
+	else:
+		minimax.init(self, 4, ai_color)
 	ask_for_next_move()
 
 func set_squares():
@@ -98,14 +99,19 @@ func try_move(old, new):
 		return false
 
 func ask_for_next_move():
-	if turn == ai_color:
-		minimax.move()
-	elif AIvsAI:
-		minimax2.move()
+	if AIvsAI:
+		if turn == Global.m1_color:
+			minimax.move()
+		elif turn == Global.m2_color:
+			minimax2.move()
+		else:
+			print("error")
+	else:
+		if turn == ai_color:
+			minimax.move()
 
 func next_turn():
-	if AIvsAI:
-		moves += 1
+	moves += 1
 	turn = Global.opposite(turn)
 	set_movable()
 
@@ -119,19 +125,22 @@ func check_winner():
 		Global.winner = "draw"
 	if Global.winner != "none":
 		if AIvsAI:
-			if Global.winner == Global.ai_color:
-				Global.m1_wins += 1
-			elif Global.winner == Global.opposite(Global.ai_color):
-				Global.m2_wins += 1
-			else:
+			if Global.winner == "draw":
 				Global.draws += 1
-			print("After ", Global.curr_game, " games:")
+			elif Global.winner == Global.m1_color:
+				Global.m1_wins += 1
+			elif Global.winner == Global.m2_color:
+				Global.m2_wins += 1
+			print("Results after ", Global.curr_game, " games:")
 			print("Minimax1: ", Global.m1_wins)
 			print("Minimax2: ", Global.m2_wins)
 			print("Draws: ", Global.draws)
-			if Global.curr_game < Global.games_total:
-				Global.curr_game += 1
-				Global.ai_color = Global.opposite(Global.ai_color)
+			
+			Global.m1_color = Global.opposite(Global.m1_color)
+			Global.m2_color = Global.opposite(Global.m2_color)
+			Global.curr_game += 1
+			get_parent().queue_free()
+			if (Global.curr_game < Global.games_total):
 				get_tree().change_scene("res://Game.tscn")
 		else:
 			get_tree().change_scene("res://WinScreen.tscn")
