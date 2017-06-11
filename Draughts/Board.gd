@@ -28,8 +28,8 @@ func _ready():
 	mover.set(self, checker)
 	checker.set(board_size, -1)
 	if (AIvsAI):
-		minimax.init(self, 2, Global.m1_color)
-		minimax2.init(self, 2, Global.m2_color)
+		minimax.init(self, 3, Global.m1_color)
+		minimax2.init(self, 3, Global.m2_color)
 	else:
 		minimax.init(self, 4, ai_color)
 	ask_for_next_move()
