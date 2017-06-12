@@ -14,9 +14,12 @@ var mover = Global.mover
 var minimax = Global.minimax3
 var moves = 0
 var max_moves = 180
+var wins
+var losses
+var draws
 
 #AIvsAI testing:
-var AIvsAI = true
+var AIvsAI = false
 var minimax2 = Global.minimax2
 
 
@@ -29,7 +32,7 @@ func _ready():
 	checker.set(board_size, -1)
 	if (AIvsAI):
 		minimax.init(self, 3, Global.m1_color)
-		minimax2.init(self, 3, Global.m2_color)
+		minimax2.init(self, 5, Global.m2_color)
 	else:
 		minimax.init(self, 4, ai_color)
 	ask_for_next_move()
@@ -142,6 +145,29 @@ func check_winner():
 			if (Global.curr_game <= Global.games_total):
 				get_tree().change_scene("res://Game.tscn")
 		else:
+			get_statistics(Global.curr_user)
+			if Global.winner == "draw":
+				draws += 1
+			elif Global.winner == ai_color:
+				losses += 1
+			else:
+				wins += 1
+			set_statistics(Global.curr_user)
 			get_tree().change_scene("res://WinScreen.tscn")
 	return Global.winner
 
+func get_statistics(name):
+	var stats = File.new()
+	stats.open("user://" + name + "/statistics.txt", File.READ)
+	wins = int(stats.get_line())
+	losses = int(stats.get_line())
+	draws = int(stats.get_line())
+	stats.close()
+
+func set_statistics(name):
+	var stats = File.new()
+	stats.open("user://" + name + "/statistics.txt", File.WRITE)
+	stats.store_string(String(wins) + "\r\n")
+	stats.store_string(String(losses) + "\r\n")
+	stats.store_string(String(draws) + "\r\n")
+	stats.close()
