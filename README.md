@@ -1,1 +1,1 @@
-# draughts
+# DRAUGHTS: AI for english checkers
