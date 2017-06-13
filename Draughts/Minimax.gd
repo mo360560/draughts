@@ -35,16 +35,20 @@ func init_zobrist_array():
 		for j in range(8):
 			zobrist_array[i].append([])
 			for k in range(4):
-				zobrist_array[i][j].append(randi())
+				zobrist_array[i][j].append(Vector2(randi(), randi()))
 
 func compute_board_hash(state):
-	var h = 0
+	var h = Vector2(0, 0)
 	for i in range(8):
 		for j in range(8):
 			if state[i][j] != " ":
-				h ^= zobrist_array[i][j][value_of(state[i][j])]
+				var tmp = int(h[0])
+				tmp ^= int(zobrist_array[i][j][value_of(state[i][j])][0])
+				h[0] = tmp
+				tmp = int(h[1])
+				tmp ^= int(zobrist_array[i][j][value_of(state[i][j])][1])
+				h[1] = tmp
 	return h
-
 
 func init(board, depth, ai_color):
 	self.board = board
@@ -122,13 +126,10 @@ func minimax(state, depth, alpha, beta, curr_player):
 		return heuristic(state)
 	var best_value = best_value(curr_player)
 	var curr_value
+	var curr_hash
 	for pos in player_stones_positions(state, curr_player):
 		for curr_move in legal_moves(state, pos):
-			if not transposition_table.has(compute_board_hash(state)):
-				curr_value = minimax_node_check(state, depth, alpha, beta, curr_player, curr_move)
-				transposition_table[compute_board_hash(state)] = curr_value
-			else:
-				curr_value = transposition_table[compute_board_hash(state)]
+			curr_value = minimax_node_check(state, depth, alpha, beta, curr_player, curr_move)
 			if curr_player == ai_color:
 				best_value = max(best_value, curr_value)
 				alpha = max(best_value, alpha)
@@ -165,16 +166,27 @@ func minimax_node_check(state, depth, alpha, beta, curr_player, curr_move):
 	#setting new values
 	var new_stone = new_stone(state, old, new) #man can be promoted to king
 	state[(old.x+new.x)/2][(old.y+new.y)/2] = " "
+	
 	state[new.x][new.y] = new_stone
 	state[old.x][old.y] = " "
 	if checker.is_jump(old, new):
 		remove_stone(middle)
+	var curr_hash = compute_board_hash(state)
 	if checker.can_continue(state, old, new):
 		continue_move = true
 		jumping_stone_pos = new
-		curr_value = minimax(state, depth, alpha, beta, curr_player)
+		if not transposition_table.has(curr_hash):
+			curr_value = minimax(state, depth, alpha, beta, curr_player)
+			transposition_table[curr_hash] = curr_value
+		else:
+			curr_value = transposition_table[curr_hash]
 	else:
-		curr_value = minimax(state, depth-1, alpha, beta, opponent)
+		if not transposition_table.has(curr_hash):
+			curr_value = minimax(state, depth-1, alpha, beta, opponent)
+			transposition_table[curr_hash] = curr_value
+		else:
+			curr_value = transposition_table[curr_hash]
+
 	#rollback:
 	if checker.is_jump(old, new):
 		restore_stone(middle)
@@ -196,5 +208,4 @@ func best_value(player):
 	return infinity
 
 func heuristic(state):
-	return 5*ai_kings + ai_men - (5*opp_kings + opp_men)
-
+	return 3*ai_kings + ai_men - (3*opp_kings + opp_men)
