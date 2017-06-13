@@ -157,5 +157,5 @@ func best_value(player):
 	return infinity
 
 func heuristic(state):
-	return 3*ai_kings + ai_men - (3*opp_kings + opp_men)
+	return 2*ai_kings + ai_men - (2*opp_kings + opp_men)
 

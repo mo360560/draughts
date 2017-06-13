@@ -22,7 +22,6 @@ var draws
 var AIvsAI = false
 var minimax2 = Global.minimax2
 
-
 func _ready():
 	set_squares()
 	set_stones()
